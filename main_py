@@ -62,3 +62,23 @@ def add_player(squad_list):
 
     except ValueError as e:
         print(f"Could not add player: {e}")
+
+# moves a player up one squad status
+def promote_player(squad_list):
+    number = input("Player Number to promote: ").strip()
+    for player in squad_list:
+        if player.number == number:
+            new_status = player.promote()
+            print(f"{player.name} is now a {new_status}.")
+            return
+    print("Couldn't find a player with that number.")
+    
+# adds an event to the match log
+def log_match_event(squad_list):
+    number = input("Player Number: ").strip()
+    if number not in [p.number for p in squad_list]:
+        print("Don't recognise that player number, but I'll log it anyway.")
+    minute = input("Minute (e.g. 34): ").strip()
+    event = input("What happened: ").strip()
+    append_match_event(number, minute, event)
+    print(f"Logged at minute {minute}'.")
