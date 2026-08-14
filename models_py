@@ -1,0 +1,48 @@
+import re
+
+VALID_STATUSES = [
+    "Reserve", "Squad Player", "Rotation Player",
+    "Starting XI", "Vice-Captain", "Captain",
+]
+
+# basic email + shirt number checks
+EMAIL_PATTERN = re.compile(r"^\S+@\S+\.\S+$")
+PLAYER_NUMBER_PATTERN = re.compile(r"^([1-9][0-9]?)$")  # 1-99, no leading zero
+
+# A base class for any player in the squad
+class Player:
+    def __init__(self, name, number, status, email, team="Chelsea"):
+        if not name:
+            raise ValueError("Missing name")
+
+        if not re.match(PLAYER_NUMBER_PATTERN, number):
+            raise ValueError(f"'{number}' doesn't look like a valid shirt number (should be 1-99)")
+
+        if not re.match(EMAIL_PATTERN, email):
+            raise ValueError(f"'{email}' doesn't look like a valid email")
+
+        self.name = name.strip().title()
+        self.number = number
+        self.email = email
+        self.team = team
+        self._status = None
+        self.status = status
+
+    # getter for status
+    @property
+    def status(self):
+        return self._status
+
+    # setter, checks it's an actual valid status before allowing it
+    @status.setter
+    def status(self, value):
+        if value not in VALID_STATUSES:
+            raise ValueError(f"'{value}' is not a valid squad status")
+        self._status = value
+
+    # bump up to the next status, unless already at the top
+    def promote(self):
+        current_index = VALID_STATUSES.index(self._status)
+        if current_index + 1 < len(VALID_STATUSES):
+            self._status = VALID_STATUSES[current_index + 1]
+        return self._status
